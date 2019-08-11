@@ -676,7 +676,7 @@
             this.rbAppdata.Size = new System.Drawing.Size(137, 17);
             this.rbAppdata.TabIndex = 3;
             this.rbAppdata.TabStop = true;
-            this.rbAppdata.Text = "User Application Data";
+            this.rbAppdata.Text = "Common Application Data";
             this.rbAppdata.UseVisualStyleBackColor = true;
             this.rbAppdata.CheckedChanged += new System.EventHandler(this.HasChangedSettingAndFilePath);
             // 
