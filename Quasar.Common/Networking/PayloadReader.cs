@@ -29,13 +29,11 @@ namespace Quasar.Common.Networking
 
         public byte[] ReadBytes(int length)
         {
-            if (_innerStream.Position + length <= _innerStream.Length)
-            {
-                byte[] result = new byte[length];
-                _innerStream.Read(result, 0, result.Length);
-                return result;
-            }
-            throw new OverflowException($"Unable to read {length} bytes from stream");
+            if (_innerStream.Position + length > _innerStream.Length)
+                throw new OverflowException($"Unable to read {length} bytes from stream");
+            byte[] result = new byte[length];
+            _innerStream.Read(result, 0, result.Length);
+            return result;
         }
 
         /// <summary>

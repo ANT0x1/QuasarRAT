@@ -56,7 +56,7 @@ namespace Quasar.Common.Helpers
             while (len >= 1024 && order + 1 < Sizes.Length)
             {
                 order++;
-                len = len / 1024;
+                len /= 1024;
             }
             return $"{len:0.##} {Sizes[order]}";
         }

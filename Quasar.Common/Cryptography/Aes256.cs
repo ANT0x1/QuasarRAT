@@ -8,10 +8,10 @@ namespace Quasar.Common.Cryptography
 {
     public class Aes256
     {
-        private const int KeyLength = 32;
-        private const int AuthKeyLength = 64;
-        private const int IvLength = 16;
-        private const int HmacSha256Length = 32;
+        private const int KEY_LENGTH = 32;
+        private const int AUTH_KEY_LENGTH = 64;
+        private const int IV_LENGTH = 16;
+        private const int HMAC_SHA256_LENGTH = 32;
         private readonly byte[] _key;
         private readonly byte[] _authKey;
 
@@ -28,8 +28,8 @@ namespace Quasar.Common.Cryptography
 
             using (Rfc2898DeriveBytes derive = new Rfc2898DeriveBytes(masterKey, Salt, 50000))
             {
-                _key = derive.GetBytes(KeyLength);
-                _authKey = derive.GetBytes(AuthKeyLength);
+                _key = derive.GetBytes(KEY_LENGTH);
+                _authKey = derive.GetBytes(AUTH_KEY_LENGTH);
             }
         }
 
@@ -49,10 +49,10 @@ namespace Quasar.Common.Cryptography
             if (input == null)
                 throw new ArgumentNullException($"{nameof(input)} can not be null.");
 
-            using (var ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
-                ms.Position = HmacSha256Length; // reserve first 32 bytes for HMAC
-                using (var aesProvider = new AesCryptoServiceProvider())
+                ms.Position = HMAC_SHA256_LENGTH; // reserve first 32 bytes for HMAC
+                using (AesCryptoServiceProvider aesProvider = new AesCryptoServiceProvider())
                 {
                     aesProvider.KeySize = 256;
                     aesProvider.BlockSize = 128;
@@ -61,15 +61,15 @@ namespace Quasar.Common.Cryptography
                     aesProvider.Key = _key;
                     aesProvider.GenerateIV();
 
-                    using (var cs = new CryptoStream(ms, aesProvider.CreateEncryptor(), CryptoStreamMode.Write))
+                    using (CryptoStream cs = new CryptoStream(ms, aesProvider.CreateEncryptor(), CryptoStreamMode.Write))
                     {
                         ms.Write(aesProvider.IV, 0, aesProvider.IV.Length); // write next 16 bytes the IV, followed by ciphertext
                         cs.Write(input, 0, input.Length);
                         cs.FlushFinalBlock();
 
-                        using (var hmac = new HMACSHA256(_authKey))
+                        using (HMACSHA256 hmac = new HMACSHA256(_authKey))
                         {
-                            byte[] hash = hmac.ComputeHash(ms.ToArray(), HmacSha256Length, ms.ToArray().Length - HmacSha256Length); // compute the HMAC of IV and ciphertext
+                            byte[] hash = hmac.ComputeHash(ms.ToArray(), HMAC_SHA256_LENGTH, ms.ToArray().Length - HMAC_SHA256_LENGTH); // compute the HMAC of IV and ciphertext
                             ms.Position = 0; // write hash at beginning
                             ms.Write(hash, 0, hash.Length);
                         }
@@ -90,9 +90,9 @@ namespace Quasar.Common.Cryptography
             if (input == null)
                 throw new ArgumentNullException($"{nameof(input)} can not be null.");
 
-            using (var ms = new MemoryStream(input))
+            using (MemoryStream ms = new MemoryStream(input))
             {
-                using (var aesProvider = new AesCryptoServiceProvider())
+                using (AesCryptoServiceProvider aesProvider = new AesCryptoServiceProvider())
                 {
                     aesProvider.KeySize = 256;
                     aesProvider.BlockSize = 128;
@@ -101,23 +101,23 @@ namespace Quasar.Common.Cryptography
                     aesProvider.Key = _key;
 
                     // read first 32 bytes for HMAC
-                    using (var hmac = new HMACSHA256(_authKey))
+                    using (HMACSHA256 hmac = new HMACSHA256(_authKey))
                     {
-                        var hash = hmac.ComputeHash(ms.ToArray(), HmacSha256Length, ms.ToArray().Length - HmacSha256Length);
-                        byte[] receivedHash = new byte[HmacSha256Length];
+                        var hash = hmac.ComputeHash(ms.ToArray(), HMAC_SHA256_LENGTH, ms.ToArray().Length - HMAC_SHA256_LENGTH);
+                        byte[] receivedHash = new byte[HMAC_SHA256_LENGTH];
                         ms.Read(receivedHash, 0, receivedHash.Length);
 
                         if (!AreEqual(hash, receivedHash))
                             throw new CryptographicException("Invalid message authentication code (MAC).");
                     }
 
-                    byte[] iv = new byte[IvLength];
-                    ms.Read(iv, 0, IvLength); // read next 16 bytes for IV, followed by ciphertext
+                    byte[] iv = new byte[IV_LENGTH];
+                    ms.Read(iv, 0, IV_LENGTH); // read next 16 bytes for IV, followed by ciphertext
                     aesProvider.IV = iv;
 
-                    using (var cs = new CryptoStream(ms, aesProvider.CreateDecryptor(), CryptoStreamMode.Read))
+                    using (CryptoStream cs = new CryptoStream(ms, aesProvider.CreateDecryptor(), CryptoStreamMode.Read))
                     {
-                        byte[] temp = new byte[ms.Length - IvLength + 1];
+                        byte[] temp = new byte[ms.Length - IV_LENGTH + 1];
                         byte[] data = new byte[cs.Read(temp, 0, temp.Length)];
                         Buffer.BlockCopy(temp, 0, data, 0, data.Length);
                         return data;
@@ -137,7 +137,7 @@ namespace Quasar.Common.Cryptography
         /// This method is safe against timing attacks.
         /// </remarks>
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-        private bool AreEqual(byte[] a1, byte[] a2)
+        private static bool AreEqual(byte[] a1, byte[] a2)
         {
             bool result = true;
             for (int i = 0; i < a1.Length; ++i)

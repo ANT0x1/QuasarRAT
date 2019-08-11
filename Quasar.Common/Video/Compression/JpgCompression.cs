@@ -14,9 +14,14 @@ namespace Quasar.Common.Video.Compression
         {
             EncoderParameter parameter = new EncoderParameter(Encoder.Quality, quality);
             this._encoderInfo = GetEncoderInfo("image/jpeg");
-            this._encoderParams = new EncoderParameters(2);
-            this._encoderParams.Param[0] = parameter;
-            this._encoderParams.Param[1] = new EncoderParameter(Encoder.Compression, (long)EncoderValue.CompressionRle);
+            this._encoderParams = new EncoderParameters(2)
+            {
+                Param =
+                {
+                    [0] = parameter,
+                    [1] = new EncoderParameter(Encoder.Compression, (long) EncoderValue.CompressionRle)
+                }
+            };
         }
 
         public void Dispose()
@@ -30,10 +35,7 @@ namespace Quasar.Common.Video.Compression
         {
             if (disposing)
             {
-                if (_encoderParams != null)
-                {
-                    _encoderParams.Dispose();
-                }
+                _encoderParams?.Dispose();
             }
         }
 
@@ -51,7 +53,7 @@ namespace Quasar.Common.Video.Compression
             bmp.Save(targetStream, _encoderInfo, _encoderParams);
         }
 
-        private ImageCodecInfo GetEncoderInfo(string mimeType)
+        private static ImageCodecInfo GetEncoderInfo(string mimeType)
         {
             ImageCodecInfo[] imageEncoders = ImageCodecInfo.GetImageEncoders();
             int num2 = imageEncoders.Length - 1;

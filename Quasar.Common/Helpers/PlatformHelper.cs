@@ -21,7 +21,7 @@ namespace Quasar.Common.Helpers
             RunningOnMono = Type.GetType("Mono.Runtime") != null;
 
             Name = "Unknown OS";
-            using (var searcher = new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem"))
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT Caption FROM Win32_OperatingSystem"))
             {
                 foreach (ManagementObject os in searcher.Get())
                 {

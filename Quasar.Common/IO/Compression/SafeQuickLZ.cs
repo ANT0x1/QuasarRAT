@@ -49,16 +49,14 @@ namespace Quasar.Common.IO.Compression
         {
             if (HeaderLength(source) == 9)
                 return source[5] | (source[6] << 8) | (source[7] << 16) | (source[8] << 24);
-            else
-                return source[2];
+            return source[2];
         }
 
         public static int SizeCompressed(byte[] source)
         {
             if (HeaderLength(source) == 9)
                 return source[1] | (source[2] << 8) | (source[3] << 16) | (source[4] << 24);
-            else
-                return source[1];
+            return source[1];
         }
 
         private static void WriteHeader(byte[] dst, int level, bool compressible, int sizeCompressed,
@@ -201,24 +199,24 @@ namespace Quasar.Common.IO.Compression
                 {
                     fetch = source[src] | (source[src + 1] << 8) | (source[src + 2] << 16);
 
-                    int o, offset2;
-                    int matchlen, k, m, best_k = 0;
-                    byte c;
+                    int o;
+                    int k;
+                    int best_k = 0;
                     int remaining = ((source.Length - UNCOMPRESSED_END - src + 1 - 1) > 255
                         ? 255
                         : (source.Length - UNCOMPRESSED_END - src + 1 - 1));
                     int hash = ((fetch >> 12) ^ fetch) & (HASH_VALUES - 1);
 
-                    c = hash_counter[hash];
-                    matchlen = 0;
-                    offset2 = 0;
+                    var c = hash_counter[hash];
+                    var matchlen = 0;
+                    var offset2 = 0;
                     for (k = 0; k < QLZ_POINTERS_3 && c > k; k++)
                     {
                         o = hashtable[hash, k];
                         if ((byte)fetch == source[o] && (byte)(fetch >> 8) == source[o + 1] &&
                             (byte)(fetch >> 16) == source[o + 2] && o < src - MINOFFSET)
                         {
-                            m = 3;
+                            var m = 3;
                             while (source[o + m] == source[src + m] && m < remaining)
                                 m++;
                             if ((m > matchlen) || (m == matchlen && o > offset2))
@@ -249,30 +247,36 @@ namespace Quasar.Common.IO.Compression
                         src += matchlen;
                         cword_val = ((cword_val >> 1) | 0x80000000);
 
-                        if (matchlen == 3 && offset <= 63)
+                        switch (matchlen)
                         {
-                            FastWrite(destination, dst, offset << 2, 1);
-                            dst++;
-                        }
-                        else if (matchlen == 3 && offset <= 16383)
-                        {
-                            FastWrite(destination, dst, (offset << 2) | 1, 2);
-                            dst += 2;
-                        }
-                        else if (matchlen <= 18 && offset <= 1023)
-                        {
-                            FastWrite(destination, dst, ((matchlen - 3) << 2) | (offset << 6) | 2, 2);
-                            dst += 2;
-                        }
-                        else if (matchlen <= 33)
-                        {
-                            FastWrite(destination, dst, ((matchlen - 2) << 2) | (offset << 7) | 3, 3);
-                            dst += 3;
-                        }
-                        else
-                        {
-                            FastWrite(destination, dst, ((matchlen - 3) << 7) | (offset << 15) | 3, 4);
-                            dst += 4;
+                            case 3 when offset <= 63:
+                                FastWrite(destination, dst, offset << 2, 1);
+                                dst++;
+                                break;
+                            case 3 when offset <= 16383:
+                                FastWrite(destination, dst, (offset << 2) | 1, 2);
+                                dst += 2;
+                                break;
+                            default:
+                            {
+                                if (matchlen <= 18 && offset <= 1023)
+                                {
+                                    FastWrite(destination, dst, ((matchlen - 3) << 2) | (offset << 6) | 2, 2);
+                                    dst += 2;
+                                }
+                                else if (matchlen <= 33)
+                                {
+                                    FastWrite(destination, dst, ((matchlen - 2) << 2) | (offset << 7) | 3, 3);
+                                    dst += 3;
+                                }
+                                else
+                                {
+                                    FastWrite(destination, dst, ((matchlen - 3) << 7) | (offset << 15) | 3, 4);
+                                    dst += 4;
+                                }
+
+                                break;
+                            }
                         }
                         lits = 0;
                     }
@@ -337,7 +341,6 @@ namespace Quasar.Common.IO.Compression
             byte[] hash_counter = new byte[4096];
             int last_matchstart = size - UNCONDITIONAL_MATCHLEN - UNCOMPRESSED_END - 1;
             int last_hashed = -1;
-            int hash;
             uint fetch = 0;
 
             if ((source[0] & 1) != 1)
@@ -367,12 +370,13 @@ namespace Quasar.Common.IO.Compression
                     }
                 }
 
+                int hash;
                 if ((cword_val & 1) == 1)
                 {
                     uint matchlen;
                     uint offset2;
 
-                    cword_val = cword_val >> 1;
+                    cword_val >>= 1;
 
                     if (level == 1)
                     {
@@ -469,7 +473,7 @@ namespace Quasar.Common.IO.Compression
                         destination[dst] = source[src];
                         dst += 1;
                         src += 1;
-                        cword_val = cword_val >> 1;
+                        cword_val >>= 1;
 
                         if (level == 1)
                         {
@@ -502,7 +506,7 @@ namespace Quasar.Common.IO.Compression
                             destination[dst] = source[src];
                             dst++;
                             src++;
-                            cword_val = cword_val >> 1;
+                            cword_val >>= 1;
                         }
                         return destination;
                     }

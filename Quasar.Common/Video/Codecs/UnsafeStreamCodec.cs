@@ -14,17 +14,14 @@ namespace Quasar.Common.Video.Codecs
         public Size CheckBlock { get; private set; }
         public int ImageQuality
         {
-            get { return _imageQuality; }
+            get => _imageQuality;
             private set
             {
                 lock (_imageProcessLock)
                 {
                     _imageQuality = value;
 
-                    if (_jpgCompression != null)
-                    {
-                        _jpgCompression.Dispose();
-                    }
+                    _jpgCompression?.Dispose();
 
                     _jpgCompression = new JpgCompression(_imageQuality);
                 }
@@ -67,15 +64,9 @@ namespace Quasar.Common.Video.Codecs
         {
             if (disposing)
             {
-                if (_decodedBitmap != null)
-                {
-                    _decodedBitmap.Dispose();
-                }
+                _decodedBitmap?.Dispose();
 
-                if (_jpgCompression != null)
-                {
-                    _jpgCompression.Dispose();
-                }
+                _jpgCompression?.Dispose();
             }
         }
 
@@ -121,7 +112,7 @@ namespace Quasar.Common.Video.Codecs
 
                     fixed (byte* ptr = _encodeBuffer)
                     {
-                        byte[] temp = null;
+                        byte[] temp;
                         using (Bitmap tmpBmp = new Bitmap(imageSize.Width, imageSize.Height, stride, format, scan0))
                         {
                             temp = _jpgCompression.Compress(tmpBmp);
@@ -138,7 +129,8 @@ namespace Quasar.Common.Video.Codecs
                 {
                     throw new Exception("PixelFormat is not equal to previous Bitmap");
                 }
-                else if (this._encodedWidth != imageSize.Width || this._encodedHeight != imageSize.Height)
+
+                if (this._encodedWidth != imageSize.Width || this._encodedHeight != imageSize.Height)
                 {
                     throw new Exception("Bitmap width/height are not equal to previous bitmap");
                 }
@@ -175,35 +167,34 @@ namespace Quasar.Common.Video.Codecs
 
                         int offset = (y * stride) + (scanArea.X * pixelSize);
 
-                        if (NativeMethods.memcmp(encBuffer + offset, pScan0 + offset, (uint)stride) != 0)
-                        {
-                            index = blocks.Count - 1;
+                        if (NativeMethods.memcmp(encBuffer + offset, pScan0 + offset, (uint) stride) == 0) continue;
 
-                            if (blocks.Count != 0 && (blocks[index].Y + blocks[index].Height) == cBlock.Y)
-                            {
-                                cBlock = new Rectangle(blocks[index].X, blocks[index].Y, blocks[index].Width,
-                                    blocks[index].Height + cBlock.Height);
-                                blocks[index] = cBlock;
-                            }
-                            else
-                            {
-                                blocks.Add(cBlock);
-                            }
+                        index = blocks.Count - 1;
+
+                        if (blocks.Count != 0 && (blocks[index].Y + blocks[index].Height) == cBlock.Y)
+                        {
+                            cBlock = new Rectangle(blocks[index].X, blocks[index].Y, blocks[index].Width,
+                                blocks[index].Height + cBlock.Height);
+                            blocks[index] = cBlock;
+                        }
+                        else
+                        {
+                            blocks.Add(cBlock);
                         }
                     }
 
-                    for (int i = 0; i < blocks.Count; i++)
+                    foreach (Rectangle t in blocks)
                     {
-                        s = new Size(CheckBlock.Width, blocks[i].Height);
+                        s = new Size(CheckBlock.Width, t.Height);
 
                         for (int x = scanArea.X; x != scanArea.Width; x += s.Width)
                         {
                             if (x == lastx)
                             {
-                                s = new Size(lastSize.Width, blocks[i].Height);
+                                s = new Size(lastSize.Width, t.Height);
                             }
 
-                            cBlock = new Rectangle(x, blocks[i].Y, s.Width, blocks[i].Height);
+                            cBlock = new Rectangle(x, t.Y, s.Width, t.Height);
                             bool foundChanges = false;
                             uint blockStride = (uint)(pixelSize * cBlock.Width);
 
@@ -220,30 +211,29 @@ namespace Quasar.Common.Video.Codecs
                                 //copy-changes
                             }
 
-                            if (foundChanges)
-                            {
-                                index = finalUpdates.Count - 1;
+                            if (!foundChanges)
+                                continue;
 
-                                if (finalUpdates.Count > 0 &&
-                                    (finalUpdates[index].X + finalUpdates[index].Width) == cBlock.X)
-                                {
-                                    Rectangle rect = finalUpdates[index];
-                                    int newWidth = cBlock.Width + rect.Width;
-                                    cBlock = new Rectangle(rect.X, rect.Y, newWidth, rect.Height);
-                                    finalUpdates[index] = cBlock;
-                                }
-                                else
-                                {
-                                    finalUpdates.Add(cBlock);
-                                }
+                            index = finalUpdates.Count - 1;
+
+                            if (finalUpdates.Count > 0 &&
+                                (finalUpdates[index].X + finalUpdates[index].Width) == cBlock.X)
+                            {
+                                Rectangle rect = finalUpdates[index];
+                                int newWidth = cBlock.Width + rect.Width;
+                                cBlock = new Rectangle(rect.X, rect.Y, newWidth, rect.Height);
+                                finalUpdates[index] = cBlock;
+                            }
+                            else
+                            {
+                                finalUpdates.Add(cBlock);
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i < finalUpdates.Count; i++)
+                foreach (Rectangle rect in finalUpdates)
                 {
-                    Rectangle rect = finalUpdates[i];
                     int blockStride = pixelSize * rect.Width;
 
                     Bitmap tmpBmp = null;

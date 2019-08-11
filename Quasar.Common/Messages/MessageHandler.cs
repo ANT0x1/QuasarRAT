@@ -59,7 +59,7 @@ namespace Quasar.Common.Messages
                 // ToList() is required to retrieve a thread-safe enumerator representing a moment-in-time snapshot of the message processors
             }
 
-            foreach (var executor in availableProcessors)
+            foreach (IMessageProcessor executor in availableProcessors)
                 executor.Execute(sender, msg);
         }
     }

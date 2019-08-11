@@ -30,7 +30,7 @@ namespace Quasar.Common.Extensions
         /// <param name="keepAliveTime">Specifies how often TCP sends keep-alive transmissions. TCP sends keep-alive transmissions to verify that an idle connection is still active. This entry is used when the remote system is responding to TCP. Otherwise, the interval between transmissions is determined by the value of the keepAliveInterval entry.</param>
         public static void SetKeepAliveEx(this Socket socket, uint keepAliveInterval, uint keepAliveTime)
         {
-            var keepAlive = new TcpKeepAlive
+            TcpKeepAlive keepAlive = new TcpKeepAlive
             {
                 onoff = 1,
                 keepaliveinterval = keepAliveInterval,

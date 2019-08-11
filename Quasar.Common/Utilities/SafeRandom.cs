@@ -16,12 +16,12 @@ namespace Quasar.Common.Utilities
 
         private static Random GetRandom()
         {
-            if (_random == null)
-            {
-                byte[] buffer = new byte[4];
-                GlobalCryptoProvider.GetBytes(buffer);
-                _random = new Random(BitConverter.ToInt32(buffer, 0));
-            }
+            if (_random != null)
+                return _random;
+
+            byte[] buffer = new byte[4];
+            GlobalCryptoProvider.GetBytes(buffer);
+            _random = new Random(BitConverter.ToInt32(buffer, 0));
 
             return _random;
         }

@@ -6,7 +6,7 @@ namespace Quasar.Common.Utilities
 {
     public class ByteConverter
     {
-        private static byte NULL_BYTE = byte.MinValue;
+        private const byte NULL_BYTE = byte.MinValue;
 
         public static byte[] GetBytes(int value)
         {
@@ -71,7 +71,7 @@ namespace Quasar.Common.Utilities
         private static byte[] GetNullBytes()
         {
             //Null bytes: 00 00
-            return new byte[] { NULL_BYTE, NULL_BYTE };
+            return new[] { NULL_BYTE, NULL_BYTE };
         }
 
         private static byte[] StringToBytes(string value)

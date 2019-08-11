@@ -50,7 +50,7 @@ namespace Quasar.Common.Messages
             // If there's no handler, don't bother going through the sync context.
             // Inside the callback, we'll need to check again, in case 
             // an event handler is removed between now and then.
-            var handler = ProgressChanged;
+            ReportProgressEventHandler handler = ProgressChanged;
             if (handler != null)
             {
                 SynchronizationContext.Post(_invokeReportProgressHandlers, value);
@@ -76,7 +76,7 @@ namespace Quasar.Common.Messages
         /// <param name="state">The progress value.</param>
         private void InvokeReportProgressHandlers(object state)
         {
-            var handler = ProgressChanged;
+            ReportProgressEventHandler handler = ProgressChanged;
             handler?.Invoke(this, (T)state);
         }
 

@@ -50,7 +50,7 @@ namespace Quasar.Common.IO
             this.Path = path;
         }
 
-        private int GetSize(long length)
+        private static int GetSize(long length)
         {
             return (length < MAX_BLOCK_SIZE) ? (int)length : MAX_BLOCK_SIZE;
         }
@@ -72,7 +72,7 @@ namespace Quasar.Common.IO
                             var length = fStream.Length - fStream.Position;
                             if (length < 0)
                                 throw new IOException("negative length");
-                            readBytes = new byte[this.GetSize(length)];
+                            readBytes = new byte[GetSize(length)];
                             fStream.Read(readBytes, 0, readBytes.Length);
                         }
                         else
@@ -81,7 +81,7 @@ namespace Quasar.Common.IO
                             var length = fStream.Length - fStream.Position;
                             if (length < 0)
                                 throw new IOException("negative length");
-                            readBytes = new byte[this.GetSize(length)];
+                            readBytes = new byte[GetSize(length)];
                             fStream.Read(readBytes, 0, readBytes.Length);
                         }
                     }
@@ -103,14 +103,21 @@ namespace Quasar.Common.IO
             {
                 readBytes = new byte[0];
 
-                if (ex is FileNotFoundException)
-                    this.LastError = "File not found";
-                else if (ex is DirectoryNotFoundException)
-                    this.LastError = "Directory not found";
-                else if (ex is PathTooLongException)
-                    this.LastError = "Path is too long";
-                else
-                    this.LastError = "Unable to read from File Stream";
+                switch (ex)
+                {
+                    case FileNotFoundException _:
+                        this.LastError = "File not found";
+                        break;
+                    case DirectoryNotFoundException _:
+                        this.LastError = "Directory not found";
+                        break;
+                    case PathTooLongException _:
+                        this.LastError = "Path is too long";
+                        break;
+                    default:
+                        this.LastError = "Unable to read from File Stream";
+                        break;
+                }
             }
 
             return false;
@@ -151,14 +158,21 @@ namespace Quasar.Common.IO
             }
             catch (IOException ex)
             {
-                if (ex is FileNotFoundException)
-                    this.LastError = "File not found";
-                else if (ex is DirectoryNotFoundException)
-                    this.LastError = "Directory not found";
-                else if (ex is PathTooLongException)
-                    this.LastError = "Path is too long";
-                else
-                    this.LastError = "Unable to write to File Stream";
+                switch (ex)
+                {
+                    case FileNotFoundException _:
+                        this.LastError = "File not found";
+                        break;
+                    case DirectoryNotFoundException _:
+                        this.LastError = "Directory not found";
+                        break;
+                    case PathTooLongException _:
+                        this.LastError = "Path is too long";
+                        break;
+                    default:
+                        this.LastError = "Unable to write to File Stream";
+                        break;
+                }
             }
 
             return false;
