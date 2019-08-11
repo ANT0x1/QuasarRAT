@@ -13,314 +13,164 @@ namespace Quasar.Server.Models
 
         public string Hosts
         {
-            get
-            {
-                return ReadValueSafe("Hosts");
-            }
-            set
-            {
-                WriteValue("Hosts", value);
-            }
+            get => ReadValueSafe("Hosts");
+            set => WriteValue("Hosts", value);
         }
 
         public string Tag
         {
-            get
-            {
-                return ReadValueSafe("Tag", "Office04");
-            }
-            set
-            {
-                WriteValue("Tag", value);
-            }
+            get => ReadValueSafe("Tag", "Office04");
+            set => WriteValue("Tag", value);
         }
 
         public int Delay
         {
-            get
-            {
-                return int.Parse(ReadValueSafe("Delay", "3000"));
-            }
-            set
-            {
-                WriteValue("Delay", value.ToString());
-            }
+            get => int.Parse(ReadValueSafe("Delay", "3000"));
+            set => WriteValue("Delay", value.ToString());
         }
 
         public string Mutex
         {
-            get
-            {
-                return ReadValueSafe("Mutex", StringHelper.GetRandomMutex());
-            }
-            set
-            {
-                WriteValue("Mutex", value);
-            }
+            get => ReadValueSafe("Mutex", StringHelper.GetRandomMutex());
+            set => WriteValue("Mutex", value);
         }
 
         public bool InstallClient
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("InstallClient", "False"));
-            }
-            set
-            {
-                WriteValue("InstallClient", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("InstallClient", "False"));
+            set => WriteValue("InstallClient", value.ToString());
         }
 
         public string InstallName
         {
-            get
-            {
-                return ReadValueSafe("InstallName", "Client");
-            }
-            set
-            {
-                WriteValue("InstallName", value);
-            }
+            get => ReadValueSafe("InstallName", "Client");
+            set => WriteValue("InstallName", value);
         }
 
         public short InstallPath
         {
-            get
-            {
-                return short.Parse(ReadValueSafe("InstallPath", "1"));
-            }
-            set
-            {
-                WriteValue("InstallPath", value.ToString());
-            }
+            get => short.Parse(ReadValueSafe("InstallPath", "1"));
+            set => WriteValue("InstallPath", value.ToString());
         }
 
         public string InstallSub
         {
-            get
-            {
-                return ReadValueSafe("InstallSub", "SubDir");
-            }
-            set
-            {
-                WriteValue("InstallSub", value);
-            }
+            get => ReadValueSafe("InstallSub", "SubDir");
+            set => WriteValue("InstallSub", value);
         }
 
         public bool HideFile
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("HideFile", "False"));
-            }
-            set
-            {
-                WriteValue("HideFile", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("HideFile", "False"));
+            set => WriteValue("HideFile", value.ToString());
         }
 
         public bool HideSubDirectory
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("HideSubDirectory", "False"));
-            }
-            set
-            {
-                WriteValue("HideSubDirectory", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("HideSubDirectory", "False"));
+            set => WriteValue("HideSubDirectory", value.ToString());
         }
 
         public bool AddStartup
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("AddStartup", "False"));
-            }
-            set
-            {
-                WriteValue("AddStartup", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("AddStartup", "False"));
+            set => WriteValue("AddStartup", value.ToString());
         }
 
         public string RegistryName
         {
-            get
-            {
-                return ReadValueSafe("RegistryName", "Quasar Client Startup");
-            }
-            set
-            {
-                WriteValue("RegistryName", value);
-            }
+            get => ReadValueSafe("RegistryName", "Quasar Client Startup");
+            set => WriteValue("RegistryName", value);
         }
 
         public bool ChangeIcon
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("ChangeIcon", "False"));
-            }
-            set
-            {
-                WriteValue("ChangeIcon", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("ChangeIcon", "False"));
+            set => WriteValue("ChangeIcon", value.ToString());
         }
 
         public string IconPath
         {
-            get
-            {
-                return ReadValueSafe("IconPath");
-            }
-            set
-            {
-                WriteValue("IconPath", value);
-            }
+            get => ReadValueSafe("IconPath");
+            set => WriteValue("IconPath", value);
         }
 
         public bool ChangeAsmInfo
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("ChangeAsmInfo", "False"));
-            }
-            set
-            {
-                WriteValue("ChangeAsmInfo", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("ChangeAsmInfo", "False"));
+            set => WriteValue("ChangeAsmInfo", value.ToString());
         }
 
         public bool Keylogger
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("Keylogger", "False"));
-            }
-            set
-            {
-                WriteValue("Keylogger", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("Keylogger", "False"));
+            set => WriteValue("Keylogger", value.ToString());
         }
 
         public string LogDirectoryName
         {
-            get
-            {
-                return ReadValueSafe("LogDirectoryName", "Logs");
-            }
-            set
-            {
-                WriteValue("LogDirectoryName", value);
-            }
+            get => ReadValueSafe("LogDirectoryName", "Logs");
+            set => WriteValue("LogDirectoryName", value);
         }
 
         public bool HideLogDirectory
         {
-            get
-            {
-                return bool.Parse(ReadValueSafe("HideLogDirectory", "False"));
-            }
-            set
-            {
-                WriteValue("HideLogDirectory", value.ToString());
-            }
+            get => bool.Parse(ReadValueSafe("HideLogDirectory", "False"));
+            set => WriteValue("HideLogDirectory", value.ToString());
         }
 
         public string ProductName
         {
-            get
-            {
-                return ReadValueSafe("ProductName");
-            }
-            set
-            {
-                WriteValue("ProductName", value);
-            }
+            get => ReadValueSafe("ProductName");
+            set => WriteValue("ProductName", value);
+        }
+
+        public bool RequestElevationOnExecution
+        {
+            get => bool.Parse(ReadValueSafe("RequestElevationOnExecution", "False"));
+            set => WriteValue("RequestElevationOnExecution", value.ToString());
         }
 
         public string Description
         {
-            get
-            {
-                return ReadValueSafe("Description");
-            }
-            set
-            {
-                WriteValue("Description", value);
-            }
+            get => ReadValueSafe("Description");
+            set => WriteValue("Description", value);
         }
 
         public string CompanyName
         {
-            get
-            {
-                return ReadValueSafe("CompanyName");
-            }
-            set
-            {
-                WriteValue("CompanyName", value);
-            }
+            get => ReadValueSafe("CompanyName");
+            set => WriteValue("CompanyName", value);
         }
 
         public string Copyright
         {
-            get
-            {
-                return ReadValueSafe("Copyright");
-            }
-            set
-            {
-                WriteValue("Copyright", value);
-            }
+            get => ReadValueSafe("Copyright");
+            set => WriteValue("Copyright", value);
         }
 
         public string Trademarks
         {
-            get
-            {
-                return ReadValueSafe("Trademarks");
-            }
-            set
-            {
-                WriteValue("Trademarks", value);
-            }
+            get => ReadValueSafe("Trademarks");
+            set => WriteValue("Trademarks", value);
         }
 
         public string OriginalFilename
         {
-            get
-            {
-                return ReadValueSafe("OriginalFilename");
-            }
-            set
-            {
-                WriteValue("OriginalFilename", value);
-            }
+            get => ReadValueSafe("OriginalFilename");
+            set => WriteValue("OriginalFilename", value);
         }
 
         public string ProductVersion
         {
-            get
-            {
-                return ReadValueSafe("ProductVersion");
-            }
-            set
-            {
-                WriteValue("ProductVersion", value);
-            }
+            get => ReadValueSafe("ProductVersion");
+            set => WriteValue("ProductVersion", value);
         }
 
         public string FileVersion
         {
-            get
-            {
-                return ReadValueSafe("FileVersion");
-            }
-            set
-            {
-                WriteValue("FileVersion", value);
-            }
+            get => ReadValueSafe("FileVersion");
+            set => WriteValue("FileVersion", value);
         }
 
         public BuilderProfile(string profileName)

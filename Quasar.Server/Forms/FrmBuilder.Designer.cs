@@ -1,6 +1,4 @@
-﻿using Quasar.Server.Controls;
-
-namespace Quasar.Server.Forms
+﻿namespace Quasar.Server.Forms
 {
     partial class FrmBuilder
     {
@@ -121,6 +119,9 @@ namespace Quasar.Server.Forms
             this.line10 = new Quasar.Server.Controls.Line();
             this.label14 = new System.Windows.Forms.Label();
             this.chkKeylogger = new System.Windows.Forms.CheckBox();
+            this.line11 = new Quasar.Server.Controls.Line();
+            this.label13 = new System.Windows.Forms.Label();
+            this.chkRequestElevationOnExecution = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.picUAC2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.picUAC1)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
@@ -238,6 +239,9 @@ namespace Quasar.Server.Forms
             // generalPage
             // 
             this.generalPage.BackColor = System.Drawing.SystemColors.Control;
+            this.generalPage.Controls.Add(this.chkRequestElevationOnExecution);
+            this.generalPage.Controls.Add(this.line11);
+            this.generalPage.Controls.Add(this.label13);
             this.generalPage.Controls.Add(this.label9);
             this.generalPage.Controls.Add(this.line6);
             this.generalPage.Controls.Add(this.label8);
@@ -1058,6 +1062,34 @@ namespace Quasar.Server.Forms
             this.chkKeylogger.Text = "Enable keyboard logging";
             this.chkKeylogger.UseVisualStyleBackColor = true;
             this.chkKeylogger.CheckedChanged += new System.EventHandler(this.chkKeylogger_CheckedChanged);
+            //
+            // line11
+            // 
+            this.line11.LineAlignment = Quasar.Server.Controls.Line.Alignment.Horizontal;
+            this.line11.Location = new System.Drawing.Point(84, 192);
+            this.line11.Name = "line11";
+            this.line11.Size = new System.Drawing.Size(300, 13);
+            this.line11.TabIndex = 22;
+            this.line11.TabStop = false;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(7, 192);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(80, 13);
+            this.label13.TabIndex = 21;
+            this.label13.Text = "Process Mutex";
+            // 
+            // chkRequestElevationOnExecution
+            // 
+            this.chkRequestElevationOnExecution.AutoSize = true;
+            this.chkRequestElevationOnExecution.Location = new System.Drawing.Point(20, 211);
+            this.chkRequestElevationOnExecution.Name = "chkRequestElevationOnExecution";
+            this.chkRequestElevationOnExecution.Size = new System.Drawing.Size(230, 17);
+            this.chkRequestElevationOnExecution.TabIndex = 23;
+            this.chkRequestElevationOnExecution.Text = "Request process elevation on execution";
+            this.chkRequestElevationOnExecution.UseVisualStyleBackColor = true;
             // 
             // FrmBuilder
             // 
@@ -1188,5 +1220,8 @@ namespace Quasar.Server.Forms
         private System.Windows.Forms.NumericUpDown numericUpDownDelay;
         private System.Windows.Forms.NumericUpDown numericUpDownPort;
         private System.Windows.Forms.CheckBox chkHideSubDirectory;
+        private System.Windows.Forms.CheckBox chkRequestElevationOnExecution;
+        private Controls.Line line11;
+        private System.Windows.Forms.Label label13;
     }
 }

